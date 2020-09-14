@@ -1,0 +1,18 @@
+Filtering images:
+//Choose a collection to be filtered e.g. ASTER Level 1 Radiance as below:
+var aster = ee.ImageCollection("ASTER/AST_L1T_003");
+//Filter spatially, for images within the area defined by the geometry below
+var spatialFiltered = aster.filterBounds(geometry);
+//Prints a list of images fitting the specified criteria to the Google Earth Engine console:
+print('spatialFiltered', spatialFiltered);
+//Filter temporally
+var temporalFiltered = spatialFiltered.filterDate('2000-01-01', '2019-12-31');
+print('temporalFiltered', temporalFiltered);
+//Filter for images for which all sensors were active:
+var bands = temporalFiltered.filterMetadata('GAIN_COEFFICIENT_B01', 'greater_than', 0);
+var bands2 = bands.filterMetadata('GAIN_COEFFICIENT_B04','greater_than', 0);
+var bands3 = bands2.filterMetadata('GAIN_COEFFICIENT_B10','greater_than', 0);
+print('bandFiltered', bands3);
+//Sort the images which fulfil all three criteria by cloud cover percentage
+var cloudsort = ee.Image(bands3.sort('CLOUDCOVER'));
+print('Cloud sorted: ', cloudsort);
