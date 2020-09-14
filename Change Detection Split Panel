@@ -1,0 +1,47 @@
+//Choose an image collection, and filter
+//In this case, radar data is filtered by polarisation setting, instrument mode, pass direction and time window.
+var imgVV = ee.ImageCollection('COPERNICUS/S1_GRD')
+        .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VV'))
+        .filter(ee.Filter.eq('instrumentMode', 'IW'))
+        .select('VV')
+        .map(function(image) {
+          var edge = image.lt(-30.0);
+          var maskedImage = image.mask().and(edge.not());
+          return image.updateMask(maskedImage);
+        });
+
+var desc = imgVV.filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'));
+var asc = imgVV.filter(ee.Filter.eq('orbitProperties_pass', 'ASCENDING'));
+
+var before = ee.Filter.date('2019-01-01', '2019-02-08');
+var after = ee.Filter.date('2019-02-10', '2019-03-18');
+
+//Mean images for a week before, and a week after a rainfall event are generated
+var descbefore = desc.filter(before).mean();
+var descafter = desc.filter(after).mean();        
+
+var ascbefore = asc.filter(before).mean();
+var ascafter = asc.filter(after).mean();
+//Define some map visualisation parameters, and add the first image to the map
+Map.setCenter(37.92, 26.61, 14);
+Map.addLayer(ascbefore, {min: -25, max: 5}, 'Mean ASC Before', true);
+//Create a linked map which will be used to display the second image
+var linkedMap = ui.Map();
+linkedMap.addLayer(ascafter, {min: -25, max: 5}, 'Mean ASC After', true);
+// Link the first map to the new map, so that both will respond simultaneously to inputs.
+var linker = ui.Map.Linker([ui.root.widgets().get(0), linkedMap]);
+
+// Create a split panel to hold the linked maps side-by-side.
+var splitPanel = ui.SplitPanel({
+  firstPanel: linker.get(0),
+  secondPanel: linker.get(1),
+  orientation: 'horizontal',
+  wipe: true,
+  style: {stretch: 'both'}
+});
+
+// Set the split panel as the only thing in root, meaning that this will be displayed rather than
+//the default standard Google Map.
+ui.root.widgets().reset([splitPanel]);
+//Set a centre point for the map, and a zoom factor
+linkedMap.setCenter(37.92, 26.61, 14);
