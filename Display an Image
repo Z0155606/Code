@@ -1,0 +1,12 @@
+// Load an image.
+var aster = ee.Image('ASTER/AST_L1T_003/20080420081127')
+//Select the bands to be displayed as an RGB composite
+var falseColor = aster.select(['B3N', 'B02', 'B01']);
+//Define some visualisation parameters
+var falseColorVis = {
+  min: 0.0,
+  max: 255.0,
+};
+Map.setCenter(38.0272, 25.6734, 9);
+//Add the prepared layer to the map
+Map.addLayer(falseColor, falseColorVis, 'False Color');
