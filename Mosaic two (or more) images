@@ -1,0 +1,9 @@
+//Choose two images to be mosaicked
+var l8 = ee.Image(‘LANDSAT/LC08/C01/T1_TOA/LC08_172041_20191230’)
+var l8_2 = ee.Image(‘LANDSAT/LC08/C01/T1_TOA/LC08_172042_20191230’)
+//Create a new image collection containing the two images to be mosaicked
+var collection = ee.ImageCollection.fromImages(
+  [l8, l8_2]);
+//Mosaic the images within the collection
+var mosaic = collection.mosaic();
+print(mosaic)
