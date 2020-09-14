@@ -1,0 +1,6 @@
+Export.image.toDrive({
+  image: falseColor,
+  description: 'landsat_ratio',
+  scale: 30,
+  region: geometry
+  });
