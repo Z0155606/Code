@@ -1,0 +1,48 @@
+//Defining the input data, in this case CHIRPS Daily rainfall, and filtering for a time-period of interest:
+var dataset = ee.ImageCollection("UCSB-CHG/CHIRPS/DAILY")
+              	.filter(ee.Filter.date('2019-02-05', '2019-02-10'));
+//Selecting ‘precipitation’ as the property of the dataset to be displayed:
+var precipitation = dataset.select('precipitation');
+//Setting the centre of the display Google Map in longitude, latitude and applying a default zoom level for the map (10):
+Map.setCenter(38.0, 26.65,10);
+// Create a label.
+var title = ui.Label('Click to inspect');
+title.style().set('position', 'top-center');
+Map.add(title);
+// Create a user interface panel to hold the chart.
+var panel = ui.Panel();
+panel.style().set({
+  width: '400px',
+  position: 'bottom-right'
+});
+Map.add(panel);
+// Create a function which creates a chart when the user clicks on the map.
+Map.onClick(function(coords) {
+  panel.clear();
+  var point = ee.Geometry.Point(coords.lon, coords.lat);
+  var chart = ui.Chart.image.series(precipitation, point, ee.Reducer.max(), 15);
+//Define some visualisation parameters for the chart  
+chart.setOptions({
+  title: 'Rainfall per day',
+  vAxis: {title: 'Volume mm/day'},
+  hAxis: {
+	title: 'Date',
+  }
+});
+  panel.add(chart);
+});
+//Define some visualisation parameters for the Google Map
+var precipitationVis = {
+  min: 0,
+  max: 10.0,
+  palette: ['001137', '0aab1e', 'e7eb05', 'ff4a2d', 'e90000']
+};
+// Set the map centre and a zoom factor
+Map.setCenter(37.85, 26.65, 10);
+//Add the prepared layer to the map
+Map.addLayer(filtered, precipitationVis, 'Precipitation');
+
+
+
+
+
