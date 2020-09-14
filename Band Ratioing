@@ -1,0 +1,25 @@
+// Load an image of interest
+var image = ee.Image('LANDSAT/LC08/C01/T1_TOA/LC08_171042_20190222');
+
+// Compute ratios:
+var ratio1 = image.select('B4').divide(image.select('B7'))
+Map.addLayer(ratio1, {min:0, max:3}, 'ratio1', false);
+
+var ratio2 = image.select('B2').divide(image.select('B4'))
+Map.addLayer(ratio2, {min:0, max:3}, 'ratio2', false);
+
+var ratio3 = image.select('B6').divide(image.select('B8'))
+Map.addLayer(ratio3, {min:0, max:3}, 'ratio3', false);
+
+//Create a new image, with the three calculated ratios as bands
+var ratios = ee.Image([ratio1, ratio2, ratio3])
+print(ratios)
+//Choose the order to display the three ratios within an RGB composite image
+var ratioimage = ratios.select(['B4', 'B2', 'B6']);
+//Define some visualisation parameters
+var ratioVis = {
+  min: 0.0,
+  max: 3.0,
+};
+Map.setCenter(38.1, 26.41, 8);
+Map.addLayer(ratioimage, ratioVis, 'Ratio Image');
