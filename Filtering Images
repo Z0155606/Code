@@ -16,3 +16,9 @@ print('bandFiltered', bands3);
 //Sort the images which fulfil all three criteria by cloud cover percentage
 var cloudsort = ee.Image(bands3.sort('CLOUDCOVER'));
 print('Cloud sorted: ', cloudsort);
+
+var geometry = /* color: #d63000 */ee.Geometry.Polygon(
+    	[[[38.10, 26.41],
+      	[38.10, 26.87],
+      	[37.625, 26.87],
+      	[37.625, 26.41]]]);
